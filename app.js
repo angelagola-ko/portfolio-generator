@@ -32,10 +32,10 @@ const promptUser = () => {
 
         },
         {
-            type: 'confrim',
+            type: 'confirm',
             name: 'confirmAbout',
             message: 'Would you like to enter some information about yourself for the "About" section?',
-            deault: true,
+            default: true,
         },
         {
             type:'input',
@@ -47,17 +47,17 @@ const promptUser = () => {
 }
 
 const promptProject = portfolioData => {
-    //If theres no 'projects' in array property, create one
-
-    if (!portfolioData.projects) {     
-    portfolioData.projects = [];
-    }
-
     console.log(`
     =============================
     Add a New Project
     =============================
     `);
+    
+    //If theres no 'projects' in array property, create one
+    if (!portfolioData.projects) {     
+    portfolioData.projects = [];
+    }
+
     return inquirer
     .prompt([
         {
@@ -77,8 +77,8 @@ const promptProject = portfolioData => {
             type: 'input',
             name: 'description',
             message:'Provde a description of the project (Required)',
-            validate: DescriptionInput => {
-                if (DescriptionInput) {
+            validate: descriptionInput => {
+                if (descriptionInput) {
                     return true;
                 } else {
                     console.log("Please enter a description of the project.");
@@ -107,6 +107,12 @@ const promptProject = portfolioData => {
         },
         {
             type: 'confirm',
+            name: 'fetaure',
+            message: 'Would you like to feature this project?',
+            default: false
+        },
+        {
+            type: 'confirm',
             name: 'confirmAddProject',
             message: 'Would you like to enter another project?',
             default: false
@@ -128,7 +134,12 @@ promptUser()
 .then(promptProject)
 //.then(projectAnswers => console.log(projectAnswers));
 .then(portfolioData => {
-    console.log(portfolioData);
+    const pageHTML = generatePage(portfolioData);
+    fs.writeFile('./index.html', pageHTML, err => {
+        if (err) throw new Error(err);
+
+        console.log('Page created! Check out index.html in ths directory.')
+    });
 });
 
 //console.log(inquirer);
